@@ -1,0 +1,776 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Angebots-Radar · BHS Haustechnik</title>
+<meta name="description" content="Mockup: Angebots-Radar App für BHS Haustechnik – verschickte Angebote per E-Mail tracken und direkt reagieren.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%232E3F53'/%3E%3Cpath d='M4 13.5 12 6l8 7.5' stroke='%23F4B327' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Open+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+  :root{
+    color-scheme:light;
+    --bg:#F4F5F7;
+    --surface:#FFFFFF;
+    --surface-2:#EDEFF2;
+    --ink:#202222;
+    --ink-muted:#6C757D;
+    --border:#E1E4E8;
+    --primary:#2E3F53;
+    --primary-ink:#FFFFFF;
+    --primary-soft:#E4E8ED;
+    --accent:#F4B327;
+    --accent-ink:#202222;
+    --accent-soft:#FCEFC9;
+    --success:#198754;
+    --success-soft:#DBEEE3;
+    --danger:#DC3545;
+    --danger-soft:#F8D9DC;
+    --frame:#1B2530;
+    --frame-glass:#10151C;
+    --shadow: 0 30px 60px -20px rgba(27,37,48,0.35);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#161B21;
+      --surface:#1E252D;
+      --surface-2:#252D36;
+      --ink:#ECEEF0;
+      --ink-muted:#9AA4AE;
+      --border:#333D48;
+      --primary:#7C93AC;
+      --primary-ink:#12181F;
+      --primary-soft:#28323D;
+      --accent:#F5C247;
+      --accent-ink:#20180A;
+      --accent-soft:#3A2F14;
+      --success:#5CB584;
+      --success-soft:#1D3327;
+      --danger:#E27C86;
+      --danger-soft:#3A2226;
+      --shadow: 0 30px 60px -20px rgba(0,0,0,0.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#161B21;
+    --surface:#1E252D;
+    --surface-2:#252D36;
+    --ink:#ECEEF0;
+    --ink-muted:#9AA4AE;
+    --border:#333D48;
+    --primary:#7C93AC;
+    --primary-ink:#12181F;
+    --primary-soft:#28323D;
+    --accent:#F5C247;
+    --accent-ink:#20180A;
+    --accent-soft:#3A2F14;
+    --success:#5CB584;
+    --success-soft:#1D3327;
+    --danger:#E27C86;
+    --danger-soft:#3A2226;
+    --shadow: 0 30px 60px -20px rgba(0,0,0,0.6);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Open Sans',system-ui,sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:28px;
+    padding:48px 20px 64px;
+  }
+
+  .intro{
+    max-width:520px;
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .intro .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--primary);
+    font-weight:600;
+  }
+  .intro h1{
+    font-family:'Poppins',sans-serif;
+    font-size:26px;
+    margin:2px 0 0;
+    text-wrap:balance;
+    font-weight:700;
+  }
+  .intro p{
+    margin:0;
+    color:var(--ink-muted);
+    font-size:14.5px;
+    line-height:1.5;
+  }
+
+  /* ---------- phone shell ---------- */
+  .stage{
+    display:flex;
+    gap:20px;
+    flex-wrap:wrap;
+    justify-content:center;
+    align-items:flex-start;
+  }
+  .phone{
+    width:375px;
+    max-width:90vw;
+    background:var(--frame);
+    border-radius:52px;
+    padding:14px;
+    box-shadow:var(--shadow);
+    position:relative;
+  }
+  .phone::before{
+    content:"";
+    position:absolute;
+    top:0; left:50%;
+    transform:translateX(-50%);
+    width:120px; height:28px;
+    background:var(--frame);
+    border-radius:0 0 18px 18px;
+    z-index:5;
+  }
+  .screen{
+    background:var(--bg);
+    border-radius:38px;
+    overflow:hidden;
+    position:relative;
+    height:780px;
+    display:flex;
+    flex-direction:column;
+    border:1px solid var(--frame-glass);
+  }
+
+  .statusbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:16px 26px 6px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink);
+    flex-shrink:0;
+  }
+  .statusbar .icons{display:flex; gap:5px; align-items:center;}
+
+  /* ---------- app header ---------- */
+  .app-header{
+    padding:6px 20px 16px;
+    flex-shrink:0;
+  }
+  .brand-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .brand-mark{
+    width:34px; height:34px;
+    border-radius:9px;
+    background:var(--primary);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .brand-mark svg{width:19px; height:19px;}
+  .brand-name{
+    font-family:'Poppins',sans-serif;
+    font-weight:700;
+    font-size:14.5px;
+    line-height:1.15;
+  }
+  .brand-name span{
+    display:block;
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:500;
+    font-size:9.5px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--ink-muted);
+    margin-top:1px;
+  }
+  .bell{
+    margin-left:auto;
+    width:34px; height:34px;
+    border-radius:50%;
+    background:var(--surface);
+    border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--ink-muted);
+  }
+  .bell svg{width:16px;height:16px;}
+
+  .page-title{
+    font-family:'Poppins',sans-serif;
+    font-size:22px;
+    font-weight:700;
+    margin:0 0 2px;
+  }
+  .page-sub{
+    margin:0;
+    font-size:13px;
+    color:var(--ink-muted);
+  }
+
+  /* ---------- stat tiles ---------- */
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+    padding:0 20px 14px;
+    flex-shrink:0;
+  }
+  .stat{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:10px 10px 9px;
+  }
+  .stat .n{
+    font-family:'IBM Plex Mono',monospace;
+    font-variant-numeric:tabular-nums;
+    font-size:20px;
+    font-weight:600;
+    line-height:1;
+  }
+  .stat.warn .n{color:#B8860F;}
+  .stat.ok .n{color:var(--success);}
+  .stat .l{
+    margin-top:5px;
+    font-size:10.5px;
+    color:var(--ink-muted);
+    line-height:1.25;
+  }
+
+  /* ---------- filter chips ---------- */
+  .chiprow{
+    display:flex;
+    gap:8px;
+    padding:0 20px 12px;
+    flex-shrink:0;
+  }
+  .chip{
+    font-family:'Open Sans',sans-serif;
+    font-size:12.5px;
+    font-weight:600;
+    padding:7px 13px;
+    border-radius:999px;
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--ink-muted);
+    cursor:pointer;
+  }
+  .chip.active{
+    background:var(--primary);
+    border-color:var(--primary);
+    color:var(--primary-ink);
+  }
+
+  /* ---------- list ---------- */
+  .list{
+    flex:1;
+    overflow-y:auto;
+    padding:2px 20px 90px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .list::-webkit-scrollbar{width:0;}
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:13px 14px;
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+    cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .card:active{transform:scale(.98);}
+
+  .card-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+  }
+  .card-customer{
+    font-weight:700;
+    font-size:14.5px;
+    line-height:1.25;
+  }
+  .card-meta{
+    font-size:12px;
+    color:var(--ink-muted);
+    margin-top:2px;
+  }
+  .card-amount{
+    font-family:'IBM Plex Mono',monospace;
+    font-variant-numeric:tabular-nums;
+    font-weight:600;
+    font-size:14px;
+    white-space:nowrap;
+  }
+
+  .card-bottom{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+  }
+  .badge{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    font-weight:600;
+    letter-spacing:.02em;
+    padding:4px 9px;
+    border-radius:7px;
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+  }
+  .badge::before{
+    content:"";
+    width:6px; height:6px;
+    border-radius:50%;
+    flex-shrink:0;
+  }
+  .badge.none{background:var(--surface-2); color:var(--ink-muted);}
+  .badge.none::before{background:var(--ink-muted);}
+  .badge.reminded{background:var(--accent-soft); color:#8A6300;}
+  .badge.reminded::before{background:var(--accent);}
+  .badge.overdue{background:var(--danger-soft); color:var(--danger);}
+  .badge.overdue::before{background:var(--danger);}
+  .badge.accepted{background:var(--success-soft); color:var(--success);}
+  .badge.accepted::before{background:var(--success);}
+
+  .days-ago{
+    font-size:11.5px;
+    color:var(--ink-muted);
+  }
+
+  .empty-hint{
+    text-align:center;
+    padding:40px 20px;
+    color:var(--ink-muted);
+    font-size:13px;
+    display:none;
+  }
+  .empty-hint.show{display:block;}
+
+  /* ---------- bottom nav ---------- */
+  .tabbar{
+    position:absolute;
+    bottom:0; left:0; right:0;
+    background:var(--surface);
+    border-top:1px solid var(--border);
+    display:flex;
+    padding:9px 10px calc(9px + env(safe-area-inset-bottom,0px));
+    z-index:8;
+  }
+  .tab{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:3px;
+    color:var(--ink-muted);
+    font-size:10.5px;
+    font-weight:600;
+    background:none;
+    border:none;
+    font-family:'Open Sans',sans-serif;
+    cursor:pointer;
+    padding:4px 0;
+  }
+  .tab svg{width:20px;height:20px;}
+  .tab.active{color:var(--primary);}
+
+  /* ---------- bottom sheet ---------- */
+  .sheet-backdrop{
+    position:absolute;
+    inset:0;
+    background:rgba(10,12,12,0.5);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .22s ease;
+    z-index:20;
+  }
+  .sheet-backdrop.show{opacity:1; pointer-events:auto;}
+
+  .sheet{
+    position:absolute;
+    left:0; right:0; bottom:0;
+    background:var(--surface);
+    border-radius:26px 26px 0 0;
+    padding:10px 20px calc(22px + env(safe-area-inset-bottom,0px));
+    transform:translateY(105%);
+    transition:transform .28s cubic-bezier(.32,.72,0,1);
+    z-index:21;
+    box-shadow:0 -12px 30px rgba(0,0,0,0.18);
+  }
+  .sheet.show{transform:translateY(0);}
+  .sheet-handle{
+    width:36px; height:4px;
+    border-radius:2px;
+    background:var(--border);
+    margin:6px auto 14px;
+  }
+  .sheet-customer{
+    font-family:'Poppins',sans-serif;
+    font-weight:700;
+    font-size:18px;
+  }
+  .sheet-row{
+    display:flex;
+    justify-content:space-between;
+    padding:9px 0;
+    border-bottom:1px solid var(--border);
+    font-size:13px;
+  }
+  .sheet-row:last-of-type{border-bottom:none;}
+  .sheet-row .k{color:var(--ink-muted);}
+  .sheet-row .v{font-weight:600; font-family:'IBM Plex Mono',monospace; font-variant-numeric:tabular-nums;}
+
+  .sheet-actions{
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+    margin-top:16px;
+  }
+  .action-btn{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    padding:13px 15px;
+    border-radius:14px;
+    border:1px solid var(--border);
+    background:var(--surface);
+    font-family:'Open Sans',sans-serif;
+    font-size:14px;
+    font-weight:600;
+    color:var(--ink);
+    cursor:pointer;
+    text-align:left;
+  }
+  .action-btn .ic{
+    width:32px; height:32px;
+    border-radius:9px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .action-btn .ic svg{width:16px;height:16px;}
+  .action-btn .txt small{
+    display:block;
+    font-weight:400;
+    font-size:11.5px;
+    color:var(--ink-muted);
+    margin-top:1px;
+  }
+  .action-btn.accept .ic{background:var(--success-soft); color:var(--success);}
+  .action-btn.remind{background:var(--accent); border-color:var(--accent); color:var(--accent-ink);}
+  .action-btn.remind .ic{background:rgba(0,0,0,.08); color:var(--accent-ink);}
+  .action-btn.remind .txt small{color:rgba(32,24,10,.65);}
+  .action-btn.delete .ic{background:var(--danger-soft); color:var(--danger);}
+  .action-btn.delete{color:var(--danger);}
+
+  .sheet-cancel{
+    display:block;
+    width:100%;
+    text-align:center;
+    padding:12px;
+    margin-top:6px;
+    background:none;
+    border:none;
+    color:var(--ink-muted);
+    font-family:'Open Sans',sans-serif;
+    font-weight:600;
+    font-size:13.5px;
+    cursor:pointer;
+  }
+
+  /* ---------- toast ---------- */
+  .toast{
+    position:absolute;
+    left:16px; right:16px;
+    bottom:90px;
+    background:var(--ink);
+    color:var(--bg);
+    border-radius:13px;
+    padding:12px 14px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:12.5px;
+    font-weight:600;
+    transform:translateY(20px);
+    opacity:0;
+    pointer-events:none;
+    transition:all .25s ease;
+    z-index:30;
+  }
+  .toast.show{transform:translateY(0); opacity:1;}
+  .toast svg{width:16px;height:16px;flex-shrink:0;color:var(--success);}
+
+  .caption{
+    max-width:375px;
+    text-align:center;
+    font-size:12px;
+    color:var(--ink-muted);
+    line-height:1.5;
+  }
+  .caption b{color:var(--ink);}
+
+  @media (prefers-reduced-motion: reduce){
+    .sheet, .sheet-backdrop, .toast, .card{transition:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <div class="eyebrow">Mockup &middot; BHS Haustechnik</div>
+  <h1>Angebots-Radar</h1>
+  <p>Ein Blick reicht: welche Angebote noch offen sind &mdash; und ein Antippen, um zuzusagen, zu erinnern oder aufzuräumen.</p>
+</div>
+
+<div class="stage">
+  <div class="phone">
+    <div class="screen">
+      <div class="statusbar">
+        <span>9:41</span>
+        <span class="icons">
+          <svg viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="7" width="3" height="5" rx="0.5" fill="currentColor"/><rect x="5" y="4" width="3" height="8" rx="0.5" fill="currentColor"/><rect x="10" y="1" width="3" height="11" rx="0.5" fill="currentColor"/><rect x="15" y="0" width="3" height="12" rx="0.5" fill="currentColor" opacity=".35"/></svg>
+          <svg viewBox="0 0 24 12" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="20" height="11" rx="3" stroke="currentColor"/><rect x="2" y="2" width="16" height="8" rx="1.5" fill="currentColor"/><rect x="21.5" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg>
+        </span>
+      </div>
+
+      <div class="app-header">
+        <div class="brand-row">
+          <div class="brand-mark">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 13 12 5l9 8"/>
+              <path d="M15 8V5h3v6"/>
+            </svg>
+          </div>
+          <div class="brand-name">BHS Haustechnik<span>Angebots-Radar</span></div>
+          <div class="bell">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.5 5.5 2 6.5H4c.5-1 2-2.5 2-6.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+          </div>
+        </div>
+        <h2 class="page-title">Offene Angebote</h2>
+        <p class="page-sub" id="pageSub">5 Angebote warten auf eine Antwort</p>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="n">12</div>
+          <div class="l">diese Woche versendet</div>
+        </div>
+        <div class="stat warn">
+          <div class="n" id="statOpen">5</div>
+          <div class="l">ohne Antwort</div>
+        </div>
+        <div class="stat ok">
+          <div class="n">6</div>
+          <div class="l">angenommen</div>
+        </div>
+      </div>
+
+      <div class="chiprow">
+        <button class="chip active">Alle offenen</button>
+        <button class="chip">Diese Woche</button>
+        <button class="chip">Überfällig &gt; 7 Tage</button>
+      </div>
+
+      <div class="list" id="list"></div>
+
+      <div class="empty-hint" id="emptyHint">Alle Angebote bearbeitet &mdash; gute Arbeit.</div>
+
+      <div class="sheet-backdrop" id="backdrop"></div>
+
+      <div class="sheet" id="sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-customer" id="sheetCustomer">—</div>
+        <div style="margin-top:10px;">
+          <div class="sheet-row"><span class="k">Angebot</span><span class="v" id="sheetNr">—</span></div>
+          <div class="sheet-row"><span class="k">Summe</span><span class="v" id="sheetAmount">—</span></div>
+          <div class="sheet-row"><span class="k">Versendet am</span><span class="v" id="sheetDate">—</span></div>
+          <div class="sheet-row"><span class="k">Status</span><span class="v" id="sheetStatus">—</span></div>
+        </div>
+        <div class="sheet-actions">
+          <button class="action-btn accept" id="btnAccept">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span>
+            <span class="txt">Telefonisch zugesagt<small>Kunde als "angenommen" markieren</small></span>
+          </button>
+          <button class="action-btn remind" id="btnRemind">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg></span>
+            <span class="txt">Erinnerungsmail senden<small>Freundliche Nachfrage an den Kunden</small></span>
+          </button>
+          <button class="action-btn delete" id="btnDelete">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-9 0 1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13"/></svg></span>
+            <span class="txt">Angebot löschen<small>Nicht mehr relevant</small></span>
+          </button>
+        </div>
+        <button class="sheet-cancel" id="btnCancel">Abbrechen</button>
+      </div>
+
+      <div class="toast" id="toast">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+        <span id="toastText">Gespeichert</span>
+      </div>
+
+      <div class="tabbar">
+        <button class="tab active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+          Offen
+        </button>
+        <button class="tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+          Erledigt
+        </button>
+        <button class="tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1-3.5 4-5.5 7-5.5s6 2 7 5.5"/></svg>
+          Team
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="caption"><b>So funktioniert's:</b> Angebot antippen → per Kachel telefonische Zusage erfassen, erinnern oder löschen. Alles mit einem Daumen bedienbar.</p>
+
+<script>
+  let offers = [
+    {id:1, customer:"Familie Reinholt", nr:"AN-2408", amount:"4.280 €", date:"12.08.2026", daysAgo:7, status:"overdue"},
+    {id:2, customer:"Möller Bau GmbH", nr:"AN-2411", amount:"12.950 €", date:"13.08.2026", daysAgo:6, status:"none"},
+    {id:3, customer:"Herr Kaczmarek", nr:"AN-2413", amount:"1.640 €", date:"14.08.2026", daysAgo:5, status:"none"},
+    {id:4, customer:"Praxis Dr. Ahlgrimm", nr:"AN-2415", amount:"7.320 €", date:"15.08.2026", daysAgo:4, status:"reminded"},
+    {id:5, customer:"Familie Sczepanski", nr:"AN-2417", amount:"2.980 €", date:"17.08.2026", daysAgo:2, status:"none"},
+  ];
+
+  const statusMeta = {
+    none:{label:"Keine Antwort", cls:"none"},
+    reminded:{label:"Erinnerung gesendet", cls:"reminded"},
+    overdue:{label:"Überfällig · 7 Tage", cls:"overdue"},
+  };
+
+  const listEl = document.getElementById('list');
+  const emptyHint = document.getElementById('emptyHint');
+  const statOpen = document.getElementById('statOpen');
+  const pageSub = document.getElementById('pageSub');
+  let activeId = null;
+
+  function render(){
+    listEl.innerHTML = '';
+    offers.forEach(o=>{
+      const meta = statusMeta[o.status];
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="card-top">
+          <div>
+            <div class="card-customer">${o.customer}</div>
+            <div class="card-meta">${o.nr} &middot; versendet ${o.date}</div>
+          </div>
+          <div class="card-amount">${o.amount}</div>
+        </div>
+        <div class="card-bottom">
+          <span class="badge ${meta.cls}">${meta.label}</span>
+          <span class="days-ago">vor ${o.daysAgo} Tag${o.daysAgo===1?'':'en'}</span>
+        </div>`;
+      card.addEventListener('click', ()=>openSheet(o.id));
+      listEl.appendChild(card);
+    });
+    statOpen.textContent = offers.length;
+    pageSub.textContent = offers.length
+      ? `${offers.length} Angebot${offers.length===1?'':'e'} warten auf eine Antwort`
+      : 'Keine offenen Angebote';
+    emptyHint.classList.toggle('show', offers.length===0);
+  }
+
+  const sheet = document.getElementById('sheet');
+  const backdrop = document.getElementById('backdrop');
+
+  function openSheet(id){
+    activeId = id;
+    const o = offers.find(x=>x.id===id);
+    if(!o) return;
+    document.getElementById('sheetCustomer').textContent = o.customer;
+    document.getElementById('sheetNr').textContent = o.nr;
+    document.getElementById('sheetAmount').textContent = o.amount;
+    document.getElementById('sheetDate').textContent = `${o.date} · vor ${o.daysAgo} Tagen`;
+    document.getElementById('sheetStatus').textContent = statusMeta[o.status].label;
+    sheet.classList.add('show');
+    backdrop.classList.add('show');
+  }
+  function closeSheet(){
+    sheet.classList.remove('show');
+    backdrop.classList.remove('show');
+    activeId = null;
+  }
+  backdrop.addEventListener('click', closeSheet);
+  document.getElementById('btnCancel').addEventListener('click', closeSheet);
+
+  function showToast(text){
+    const t = document.getElementById('toast');
+    document.getElementById('toastText').textContent = text;
+    t.classList.add('show');
+    clearTimeout(showToast._h);
+    showToast._h = setTimeout(()=>t.classList.remove('show'), 2600);
+  }
+
+  document.getElementById('btnAccept').addEventListener('click', ()=>{
+    const o = offers.find(x=>x.id===activeId);
+    if(!o) return;
+    offers = offers.filter(x=>x.id!==activeId);
+    closeSheet();
+    render();
+    showToast(`${o.customer} als angenommen markiert`);
+  });
+
+  document.getElementById('btnDelete').addEventListener('click', ()=>{
+    const o = offers.find(x=>x.id===activeId);
+    if(!o) return;
+    offers = offers.filter(x=>x.id!==activeId);
+    closeSheet();
+    render();
+    showToast(`Angebot ${o.nr} gelöscht`);
+  });
+
+  document.getElementById('btnRemind').addEventListener('click', ()=>{
+    const o = offers.find(x=>x.id===activeId);
+    if(!o) return;
+    o.status = 'reminded';
+    o.daysAgo = 0;
+    closeSheet();
+    render();
+    showToast(`Erinnerungsmail an ${o.customer} gesendet`);
+  });
+
+  const chips = document.querySelectorAll('.chip');
+  chips.forEach(c=>c.addEventListener('click', ()=>{
+    chips.forEach(x=>x.classList.remove('active'));
+    c.classList.add('active');
+  }));
+
+  render();
+</script>
+
+</body>
+</html>
