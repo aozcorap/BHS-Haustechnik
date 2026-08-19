@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Angebots-Radar · BHS Haustechnik</title>
 <meta name="description" content="Mockup: Angebots-Radar App für BHS Haustechnik – verschickte Angebote per E-Mail tracken und direkt reagieren.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%232E3F53'/%3E%3Cpath d='M4 13.5 12 6l8 7.5' stroke='%23F4B327' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
@@ -79,6 +79,7 @@
     color:var(--ink);
     font-family:'Open Sans',system-ui,sans-serif;
     min-height:100vh;
+    min-height:100dvh;
     display:flex;
     flex-direction:column;
     align-items:center;
@@ -237,7 +238,13 @@
     border:1px solid var(--border);
     border-radius:14px;
     padding:10px 10px 9px;
+    text-align:left;
+    font-family:inherit;
+    cursor:pointer;
+    transition:border-color .15s ease, transform .1s ease;
   }
+  .stat:active{transform:scale(.97);}
+  .stat.is-active{border-color:var(--primary); box-shadow:inset 0 0 0 1px var(--primary);}
   .stat .n{
     font-family:'IBM Plex Mono',monospace;
     font-variant-numeric:tabular-nums;
@@ -260,6 +267,7 @@
     gap:8px;
     padding:0 20px 12px;
     flex-shrink:0;
+    overflow-x:auto;
   }
   .chip{
     font-family:'Open Sans',sans-serif;
@@ -271,6 +279,7 @@
     background:var(--surface);
     color:var(--ink-muted);
     cursor:pointer;
+    white-space:nowrap;
   }
   .chip.active{
     background:var(--primary);
@@ -289,6 +298,11 @@
     -webkit-overflow-scrolling:touch;
   }
   .list::-webkit-scrollbar{width:0;}
+  .list.is-empty{
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+  }
 
   .card{
     background:var(--surface);
@@ -302,6 +316,8 @@
     transition:transform .15s ease, box-shadow .15s ease;
   }
   .card:active{transform:scale(.98);}
+  .card.static{cursor:default;}
+  .card.static:active{transform:none;}
 
   .card-top{
     display:flex;
@@ -365,13 +381,49 @@
   }
 
   .empty-hint{
-    text-align:center;
-    padding:40px 20px;
     color:var(--ink-muted);
     font-size:13px;
-    display:none;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
   }
-  .empty-hint.show{display:block;}
+  .empty-hint svg{width:30px;height:30px;color:var(--border);}
+  .empty-hint b{display:block; color:var(--ink); font-size:14px; font-weight:700; font-family:'Poppins',sans-serif;}
+
+  /* ---------- team tab ---------- */
+  .team-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:14px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .team-avatar{
+    width:38px; height:38px;
+    border-radius:50%;
+    background:var(--primary-soft);
+    color:var(--primary);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Poppins',sans-serif;
+    font-weight:700;
+    font-size:13px;
+    flex-shrink:0;
+  }
+  .team-name{font-weight:700; font-size:13.5px;}
+  .team-role{font-size:11.5px; color:var(--ink-muted); margin-top:1px;}
+  .team-count{
+    margin-left:auto;
+    text-align:right;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    font-weight:600;
+    color:var(--primary);
+    white-space:nowrap;
+  }
+  .team-count small{display:block; font-family:'Open Sans',sans-serif; font-weight:400; font-size:9.5px; color:var(--ink-muted);}
 
   /* ---------- bottom nav ---------- */
   .tabbar{
@@ -539,6 +591,32 @@
   @media (prefers-reduced-motion: reduce){
     .sheet, .sheet-backdrop, .toast, .card{transition:none;}
   }
+
+  /* ---------- true mobile: fill the viewport like a real app ---------- */
+  @media (max-width: 640px){
+    body{padding:0; gap:0;}
+    .intro, .caption{display:none;}
+    .stage{width:100%; gap:0;}
+    .phone{
+      width:100%;
+      max-width:100%;
+      min-height:100vh;
+      min-height:100dvh;
+      background:var(--bg);
+      border-radius:0;
+      padding:0;
+      box-shadow:none;
+    }
+    .phone::before{display:none;}
+    .screen{
+      height:100vh;
+      height:100dvh;
+      border-radius:0;
+      border:none;
+    }
+    .statusbar{display:none;}
+    .app-header{padding-top:calc(14px + env(safe-area-inset-top,0px));}
+  }
 </style>
 </head>
 <body>
@@ -573,34 +651,32 @@
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 9a6 6 0 1 1 12 0c0 4 1.5 5.5 2 6.5H4c.5-1 2-2.5 2-6.5Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
           </div>
         </div>
-        <h2 class="page-title">Offene Angebote</h2>
+        <h2 class="page-title" id="pageTitle">Offene Angebote</h2>
         <p class="page-sub" id="pageSub">5 Angebote warten auf eine Antwort</p>
       </div>
 
-      <div class="stats">
-        <div class="stat">
-          <div class="n">12</div>
+      <div class="stats" id="stats">
+        <button class="stat" id="statWeekBtn" type="button">
+          <div class="n" id="statWeek">11</div>
           <div class="l">diese Woche versendet</div>
-        </div>
-        <div class="stat warn">
+        </button>
+        <button class="stat warn" id="statOpenBtn" type="button">
           <div class="n" id="statOpen">5</div>
           <div class="l">ohne Antwort</div>
-        </div>
-        <div class="stat ok">
-          <div class="n">6</div>
+        </button>
+        <button class="stat ok" id="statAcceptedBtn" type="button">
+          <div class="n" id="statAccepted">6</div>
           <div class="l">angenommen</div>
-        </div>
+        </button>
       </div>
 
-      <div class="chiprow">
-        <button class="chip active">Alle offenen</button>
-        <button class="chip">Diese Woche</button>
-        <button class="chip">Überfällig &gt; 7 Tage</button>
+      <div class="chiprow" id="chiprow">
+        <button class="chip active" data-chip="all">Alle offenen</button>
+        <button class="chip" data-chip="week">Diese Woche</button>
+        <button class="chip" data-chip="overdue">Überfällig &gt; 7 Tage</button>
       </div>
 
       <div class="list" id="list"></div>
-
-      <div class="empty-hint" id="emptyHint">Alle Angebote bearbeitet &mdash; gute Arbeit.</div>
 
       <div class="sheet-backdrop" id="backdrop"></div>
 
@@ -636,15 +712,15 @@
       </div>
 
       <div class="tabbar">
-        <button class="tab active">
+        <button class="tab active" data-tab="open">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
           Offen
         </button>
-        <button class="tab">
+        <button class="tab" data-tab="done">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
           Erledigt
         </button>
-        <button class="tab">
+        <button class="tab" data-tab="team">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1-3.5 4-5.5 7-5.5s6 2 7 5.5"/></svg>
           Team
         </button>
@@ -653,15 +729,30 @@
   </div>
 </div>
 
-<p class="caption"><b>So funktioniert's:</b> Angebot antippen → per Kachel telefonische Zusage erfassen, erinnern oder löschen. Alles mit einem Daumen bedienbar.</p>
+<p class="caption"><b>So funktioniert's:</b> Angebot antippen → per Kachel telefonische Zusage erfassen, erinnern oder löschen. Kacheln oben und Bottom-Nav filtern die Liste live. Alles mit einem Daumen bedienbar.</p>
 
 <script>
-  let offers = [
-    {id:1, customer:"Familie Reinholt", nr:"AN-2408", amount:"4.280 €", date:"12.08.2026", daysAgo:7, status:"overdue"},
+  let openOffers = [
+    {id:1, customer:"Familie Reinholt", nr:"AN-2408", amount:"4.280 €", date:"08.08.2026", daysAgo:9, status:"overdue"},
     {id:2, customer:"Möller Bau GmbH", nr:"AN-2411", amount:"12.950 €", date:"13.08.2026", daysAgo:6, status:"none"},
     {id:3, customer:"Herr Kaczmarek", nr:"AN-2413", amount:"1.640 €", date:"14.08.2026", daysAgo:5, status:"none"},
     {id:4, customer:"Praxis Dr. Ahlgrimm", nr:"AN-2415", amount:"7.320 €", date:"15.08.2026", daysAgo:4, status:"reminded"},
     {id:5, customer:"Familie Sczepanski", nr:"AN-2417", amount:"2.980 €", date:"17.08.2026", daysAgo:2, status:"none"},
+  ];
+
+  let acceptedOffers = [
+    {id:101, customer:"Familie Winterhoff", nr:"AN-2390", amount:"5.640 €", date:"05.08.2026", sentDaysAgo:5, acceptedDaysAgo:3},
+    {id:102, customer:"Gebrüder Anlagenbau", nr:"AN-2394", amount:"22.100 €", date:"06.08.2026", sentDaysAgo:6, acceptedDaysAgo:2},
+    {id:103, customer:"Familie Osei", nr:"AN-2398", amount:"3.150 €", date:"09.08.2026", sentDaysAgo:4, acceptedDaysAgo:4},
+    {id:104, customer:"Kanzlei Dr. Vogt", nr:"AN-2401", amount:"9.870 €", date:"11.08.2026", sentDaysAgo:6, acceptedDaysAgo:1},
+    {id:105, customer:"Herr Brandner", nr:"AN-2404", amount:"1.980 €", date:"12.08.2026", sentDaysAgo:6, acceptedDaysAgo:1},
+    {id:106, customer:"Familie Tammer", nr:"AN-2406", amount:"6.430 €", date:"13.08.2026", sentDaysAgo:5, acceptedDaysAgo:2},
+  ];
+
+  const team = [
+    {name:"Michael Bruder", role:"Geschäftsführung", initials:"MB"},
+    {name:"Julia Roth", role:"Vertrieb Innendienst", initials:"JR"},
+    {name:"Kevin Adler", role:"Vertrieb Außendienst", initials:"KA"},
   ];
 
   const statusMeta = {
@@ -670,18 +761,53 @@
     overdue:{label:"Überfällig · 7 Tage", cls:"overdue"},
   };
 
-  const listEl = document.getElementById('list');
-  const emptyHint = document.getElementById('emptyHint');
-  const statOpen = document.getElementById('statOpen');
-  const pageSub = document.getElementById('pageSub');
-  let activeId = null;
+  const emptyMeta = {
+    all:{title:"Alles bearbeitet", text:"Aktuell warten keine Angebote auf eine Antwort."},
+    week:{title:"Diese Woche nichts offen", text:"In den letzten 7 Tagen wurden alle Angebote bereits bearbeitet."},
+    overdue:{title:"Keine Überfälligen", text:"Kein Angebot ist aktuell länger als 7 Tage ohne Antwort."},
+    done:{title:"Noch nichts angenommen", text:"Sobald ein Kunde zusagt, taucht das Angebot hier auf."},
+  };
 
-  function render(){
-    listEl.innerHTML = '';
-    offers.forEach(o=>{
+  let currentTab = 'open';
+  let currentChip = 'all';
+  let activeId = null;
+  let activeKind = null; // 'open'
+
+  const emptyIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h11"/></svg>';
+
+  const listEl = document.getElementById('list');
+  const pageTitle = document.getElementById('pageTitle');
+  const pageSub = document.getElementById('pageSub');
+  const statsEl = document.getElementById('stats');
+  const chiprowEl = document.getElementById('chiprow');
+
+  function sentThisWeekCount(){
+    const openWeek = openOffers.filter(o => o.daysAgo <= 7).length;
+    const acceptedWeek = acceptedOffers.filter(o => o.sentDaysAgo <= 7).length;
+    return openWeek + acceptedWeek;
+  }
+
+  function updateStats(){
+    document.getElementById('statWeek').textContent = sentThisWeekCount();
+    document.getElementById('statOpen').textContent = openOffers.length;
+    document.getElementById('statAccepted').textContent = acceptedOffers.length;
+
+    document.getElementById('statWeekBtn').classList.toggle('is-active', currentTab==='open' && currentChip==='week');
+    document.getElementById('statOpenBtn').classList.toggle('is-active', currentTab==='open' && currentChip==='all');
+    document.getElementById('statAcceptedBtn').classList.toggle('is-active', currentTab==='done');
+  }
+
+  function filteredOpen(){
+    if(currentChip==='week') return openOffers.filter(o => o.daysAgo <= 7);
+    if(currentChip==='overdue') return openOffers.filter(o => o.daysAgo > 7);
+    return openOffers;
+  }
+
+  function offerCard(o, kind){
+    const card = document.createElement('div');
+    card.className = 'card' + (kind==='done' ? ' static' : '');
+    if(kind==='open'){
       const meta = statusMeta[o.status];
-      const card = document.createElement('div');
-      card.className = 'card';
       card.innerHTML = `
         <div class="card-top">
           <div>
@@ -695,13 +821,90 @@
           <span class="days-ago">vor ${o.daysAgo} Tag${o.daysAgo===1?'':'en'}</span>
         </div>`;
       card.addEventListener('click', ()=>openSheet(o.id));
+    } else {
+      card.innerHTML = `
+        <div class="card-top">
+          <div>
+            <div class="card-customer">${o.customer}</div>
+            <div class="card-meta">${o.nr} &middot; versendet ${o.date}</div>
+          </div>
+          <div class="card-amount">${o.amount}</div>
+        </div>
+        <div class="card-bottom">
+          <span class="badge accepted">Angenommen</span>
+          <span class="days-ago">vor ${o.acceptedDaysAgo} Tag${o.acceptedDaysAgo===1?'':'en'} zugesagt</span>
+        </div>`;
+    }
+    return card;
+  }
+
+  function renderOpen(){
+    pageTitle.textContent = 'Offene Angebote';
+    statsEl.style.display = '';
+    chiprowEl.style.display = '';
+    Array.from(chiprowEl.children).forEach(c => c.classList.toggle('active', c.dataset.chip===currentChip));
+
+    const items = filteredOpen();
+    pageSub.textContent = items.length
+      ? `${items.length} Angebot${items.length===1?'':'e'} warten auf eine Antwort`
+      : 'Keine offenen Angebote in dieser Ansicht';
+
+    listEl.innerHTML = '';
+    items.forEach(o => listEl.appendChild(offerCard(o, 'open')));
+
+    toggleEmpty(items.length===0, emptyMeta[currentChip]);
+  }
+
+  function toggleEmpty(show, meta){
+    listEl.classList.toggle('is-empty', show);
+    if(show && meta){
+      listEl.innerHTML = `<div class="empty-hint">${emptyIcon}<div><b>${meta.title}</b>${meta.text}</div></div>`;
+    }
+  }
+
+  function renderDone(){
+    pageTitle.textContent = 'Angenommene Angebote';
+    statsEl.style.display = '';
+    chiprowEl.style.display = 'none';
+    pageSub.textContent = acceptedOffers.length
+      ? `${acceptedOffers.length} Angebot${acceptedOffers.length===1?'':'e'} telefonisch zugesagt`
+      : 'Noch keine Zusagen';
+
+    listEl.innerHTML = '';
+    acceptedOffers.forEach(o => listEl.appendChild(offerCard(o, 'done')));
+
+    toggleEmpty(acceptedOffers.length===0, emptyMeta.done);
+  }
+
+  function renderTeam(){
+    pageTitle.textContent = 'Team';
+    statsEl.style.display = 'none';
+    chiprowEl.style.display = 'none';
+    const totalOpen = openOffers.length;
+    pageSub.textContent = `${totalOpen} offene Angebote im Team verteilt`;
+
+    listEl.innerHTML = '';
+    team.forEach((m, i) => {
+      const assigned = openOffers.filter((_, idx) => idx % team.length === i).length;
+      const card = document.createElement('div');
+      card.className = 'team-card';
+      card.innerHTML = `
+        <div class="team-avatar">${m.initials}</div>
+        <div>
+          <div class="team-name">${m.name}</div>
+          <div class="team-role">${m.role}</div>
+        </div>
+        <div class="team-count">${assigned}<small>offen</small></div>`;
       listEl.appendChild(card);
     });
-    statOpen.textContent = offers.length;
-    pageSub.textContent = offers.length
-      ? `${offers.length} Angebot${offers.length===1?'':'e'} warten auf eine Antwort`
-      : 'Keine offenen Angebote';
-    emptyHint.classList.toggle('show', offers.length===0);
+    toggleEmpty(false);
+  }
+
+  function render(){
+    if(currentTab==='open') renderOpen();
+    else if(currentTab==='done') renderDone();
+    else renderTeam();
+    updateStats();
   }
 
   const sheet = document.getElementById('sheet');
@@ -709,7 +912,7 @@
 
   function openSheet(id){
     activeId = id;
-    const o = offers.find(x=>x.id===id);
+    const o = openOffers.find(x=>x.id===id);
     if(!o) return;
     document.getElementById('sheetCustomer').textContent = o.customer;
     document.getElementById('sheetNr').textContent = o.nr;
@@ -736,38 +939,66 @@
   }
 
   document.getElementById('btnAccept').addEventListener('click', ()=>{
-    const o = offers.find(x=>x.id===activeId);
-    if(!o) return;
-    offers = offers.filter(x=>x.id!==activeId);
+    const idx = openOffers.findIndex(x=>x.id===activeId);
+    if(idx===-1) return;
+    const o = openOffers[idx];
+    openOffers.splice(idx,1);
+    acceptedOffers.unshift({id:o.id, customer:o.customer, nr:o.nr, amount:o.amount, date:o.date, sentDaysAgo:o.daysAgo, acceptedDaysAgo:0});
     closeSheet();
     render();
     showToast(`${o.customer} als angenommen markiert`);
   });
 
   document.getElementById('btnDelete').addEventListener('click', ()=>{
-    const o = offers.find(x=>x.id===activeId);
-    if(!o) return;
-    offers = offers.filter(x=>x.id!==activeId);
+    const idx = openOffers.findIndex(x=>x.id===activeId);
+    if(idx===-1) return;
+    const o = openOffers[idx];
+    openOffers.splice(idx,1);
     closeSheet();
     render();
     showToast(`Angebot ${o.nr} gelöscht`);
   });
 
   document.getElementById('btnRemind').addEventListener('click', ()=>{
-    const o = offers.find(x=>x.id===activeId);
+    const o = openOffers.find(x=>x.id===activeId);
     if(!o) return;
     o.status = 'reminded';
-    o.daysAgo = 0;
     closeSheet();
     render();
     showToast(`Erinnerungsmail an ${o.customer} gesendet`);
   });
 
-  const chips = document.querySelectorAll('.chip');
-  chips.forEach(c=>c.addEventListener('click', ()=>{
-    chips.forEach(x=>x.classList.remove('active'));
-    c.classList.add('active');
-  }));
+  chiprowEl.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.chip');
+    if(!btn) return;
+    currentChip = btn.dataset.chip;
+    render();
+  });
+
+  document.querySelectorAll('.tab').forEach(tabBtn => {
+    tabBtn.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      tabBtn.classList.add('active');
+      currentTab = tabBtn.dataset.tab;
+      if(currentTab==='open') currentChip = 'all';
+      render();
+    });
+  });
+
+  document.getElementById('statWeekBtn').addEventListener('click', ()=>{
+    setTab('open'); currentChip = 'week'; render();
+  });
+  document.getElementById('statOpenBtn').addEventListener('click', ()=>{
+    setTab('open'); currentChip = 'all'; render();
+  });
+  document.getElementById('statAcceptedBtn').addEventListener('click', ()=>{
+    setTab('done'); render();
+  });
+
+  function setTab(tab){
+    currentTab = tab;
+    document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===tab));
+  }
 
   render();
 </script>
